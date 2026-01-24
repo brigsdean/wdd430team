@@ -4,7 +4,7 @@ Brief Summary of Week 2 meeting:
 -Brainstormed over the looks of the project (look listed below)
 -Brainstormed the user-stories and put that into a list (listed below)
 
-Group members are Brigs Dean and Johnathan Babb
+Group members are Brigs Dean, Johnathan Babb, and Fabian Betancourt
 
 link to repo:  https://github.com/brigsdean/wdd430team
 
