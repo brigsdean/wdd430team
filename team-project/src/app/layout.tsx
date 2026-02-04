@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Handcrafted Haven",
-  description: "A marketplace for unique handcrafted items by talented artisans",
+  description:
+    "A marketplace for unique handcrafted items by talented artisans",
 };
 
 export default function RootLayout({
@@ -13,9 +14,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
