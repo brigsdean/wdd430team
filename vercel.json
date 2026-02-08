@@ -3,5 +3,6 @@
   "outputDirectory": "team-project/.next",
   "installCommand": "cd team-project && npm ci",
   "framework": "nextjs",
-  "regions": ["iad1"]
+  "regions": ["iad1"],
+  "rootDirectory": "team-project"
 }
