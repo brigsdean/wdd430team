@@ -58,13 +58,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     isDark: theme === "dark",
   };
 
-  // Prevent flash of wrong theme during SSR
-  if (!mounted) {
-    return <div className="opacity-0">{children}</div>;
-  }
-
   return (
-    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+    <ThemeContext.Provider value={value}>
+      <div className={mounted ? "" : "opacity-0"}>{children}</div>
+    </ThemeContext.Provider>
   );
 }
 
