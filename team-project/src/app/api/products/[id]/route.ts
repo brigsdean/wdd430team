@@ -49,10 +49,10 @@ const mockProducts = [
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = params;
+    const { id } = await context.params;
     const productId = parseInt(id);
 
     // Mock: fetch product from "database"
