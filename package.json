@@ -1,0 +1,17 @@
+{
+  "name": "wdd430team",
+  "private": true,
+  "workspaces": [
+    "team-project"
+  ],
+  "scripts": {
+    "dev": "npm --workspace team-project run dev",
+    "build": "npm --workspace team-project run build",
+    "vercel-build": "npm --workspace team-project run build",
+    "start": "npm --workspace team-project run start",
+    "lint": "npm --workspace team-project run lint"
+  },
+  "devDependencies": {
+    "next": "16.1.4"
+  }
+}
