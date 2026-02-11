@@ -6,6 +6,14 @@
   --amber-700: #b45309;
   --amber-100: #fef3c7;
   --amber-50: #fffbeb;
+  --amber-500: #f59e0b;
+  --amber-400: #fbbf24;
+}
+
+/* Dark mode color adjustments */
+.dark {
+  --amber-600: #f59e0b;
+  --amber-700: #d97706;
 }
 
 body {
@@ -25,4 +33,16 @@ body {
 /* Ensure smooth scrolling */
 html {
   scroll-behavior: smooth;
+}
+
+/* Improve dark mode transitions */
+* {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in-out;
+}
+
+/* Prevent flash of wrong theme */
+html {
+  color-scheme: light dark;
 }
