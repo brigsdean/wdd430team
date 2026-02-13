@@ -4,8 +4,11 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import Navigation from "@/components/Navigation";
+import { useCart } from "@/contexts/CartContext";
 
 export default function BrowsePage() {
+  const { addItem } = useCart();
+  const [justAdded, setJustAdded] = useState<Record<string | number, boolean>>({});
   // Mock products - should be fetched from API/DB in a real implementation
   const [products] = useState([
     {
@@ -153,26 +156,27 @@ export default function BrowsePage() {
         {/* Products Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filtered.map((product) => (
-            <Link
+            <div
               key={product.id}
-              href={`/products/${product.id}`}
               className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg dark:hover:shadow-gray-900/20 transition-all"
             >
               <div className="h-64 bg-gray-100 dark:bg-gray-700 overflow-hidden flex items-center justify-center transition-colors">
-                <Image
-                  src={product.image}
-                  alt={product.title}
-                  width={300}
-                  height={300}
-                  className="w-full h-full object-cover hover:scale-105 transition-transform"
-                />
+                <Link href={`/products/${product.id}`} className="w-full h-full block">
+                  <Image
+                    src={product.image}
+                    alt={product.title}
+                    width={300}
+                    height={300}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform"
+                  />
+                </Link>
               </div>
               <div className="p-4">
                 <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold mb-2 transition-colors">
                   {product.category}
                 </p>
                 <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 line-clamp-2 transition-colors">
-                  {product.title}
+                  <Link href={`/products/${product.id}`}>{product.title}</Link>
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-gray-300 mb-3 transition-colors">
                   {product.seller}
@@ -191,11 +195,46 @@ export default function BrowsePage() {
                     </span>
                   </div>
                 </div>
-                <button className="w-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 py-2 rounded font-semibold hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors">
-                  View Details
-                </button>
+                <div className="flex gap-3">
+                  <Link href={`/products/${product.id}`} className="flex-1">
+                    <button className="w-full bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 py-2 rounded font-semibold hover:bg-amber-200 dark:hover:bg-amber-900/50 transition-colors">
+                      View Details
+                    </button>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      addItem({ id: product.id, title: product.title, price: product.price, image: product.image });
+                      setJustAdded((s) => ({ ...s, [product.id]: true }));
+                      window.setTimeout(() => {
+                        setJustAdded((s) => {
+                          const copy = { ...s };
+                          delete copy[product.id];
+                          return copy;
+                        });
+                      }, 900);
+                    }}
+                    className={
+                      `w-28 py-2 rounded font-semibold transition-colors flex items-center justify-center gap-2 ` +
+                      (justAdded[product.id]
+                        ? "bg-green-600 text-white scale-105 transform animate-pulse"
+                        : "bg-amber-600 text-white hover:bg-amber-700")
+                    }
+                    aria-live="polite"
+                  >
+                    {justAdded[product.id] ? (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 00-1.414-1.414L8 11.172 4.707 7.879A1 1 0 003.293 9.293l4 4a1 1 0 001.414 0l8-8z" clipRule="evenodd" />
+                        </svg>
+                        Added
+                      </>
+                    ) : (
+                      "Add"
+                    )}
+                  </button>
+                </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </main>

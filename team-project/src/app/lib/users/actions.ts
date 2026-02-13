@@ -48,3 +48,14 @@ export async function updateUser(
     message: "Update user is not implemented yet.",
   };
 }
+
+export async function loginUser(
+  email: string,
+  password: string
+): Promise<ActionResult> {
+  const _payload = { email, password };
+  return {
+    success: false,
+    message: "Login user is not implemented yet.",
+  };
+}

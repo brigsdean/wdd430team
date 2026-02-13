@@ -1,81 +1,110 @@
 "use client";
-
-import { signIn } from "next-auth/react";
-import { useState } from "react";
+import { useState } from "react"
 import { useRouter } from "next/navigation";
+import { loginUser } from "@/app/lib/users/actions";
 import Link from "next/link";
 
-
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+    const router = useRouter();
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-      callbackUrl: "/"
-    });
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+        setLoading(true);
 
-    if (result?.error) {
-      setError("Invalid email or password");
-    } else {
-      router.push("/");
-    }
-  };
+        // form validation on the client side
+        if (!email.includes("@")) {
+            setError("Please enter a valid email address.");
+            setLoading(false);
+            return;
+        }
+        if (!password) {
+            setError("Password is required.");
+            setLoading(false);
+            return;
+        }
 
-  return (
+        try {
+            // this is going to the loginUser function in lib/actions.ts
+            const result = await loginUser(email, password);
 
-    
-            <form onSubmit={handleSubmit} className="bg-gray-100 p-6 rounded-lg shadow-lg">
-                <h2  className="text-2xl font-bold mb-4">Login</h2>
-                {error && <p className="text-red-500">{error}</p>}
-                <label htmlFor="email" className="sr-only">Login</label>
-                <input
-                type="email"
-                name="email"
-                placeholder="Email"
-                className="border p-2 w-full my-2"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+            if (result.success) {
+                router.push("/");
+            } else {
+                setError(result.message);
+            }
+        } catch (err) {
+            setError("An error occurred. Please try again.");
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <form 
+            onSubmit={handleSubmit}
+            className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md w-full max-w-md space-y-4"
+        >
+            <h1 className="text-xl font-semibold text-center text-gray-800 dark:text-gray-100 mb-4">Sign In</h1>
+
+            {/* Email */}
+            <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+                <input 
+                    type="email" 
+                    id="email" 
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-amber-600" 
+                    value={email} 
+                    onChange={(e) => setEmail(e.target.value)} 
+                    placeholder="you@example.com"
+                    required
                 />
-                <label htmlFor="password" className="sr-only">Password</label>
-                <input
-                name="password"
-                type="password"
-                placeholder="Password"
-                className="border p-2 w-full my-2"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+            </div>
+
+            {/* Password */}
+            <div>
+                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Password</label>
+                <input 
+                    type="password" 
+                    id="password" 
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-amber-600" 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    placeholder="••••••••"
+                    required 
                 />
-                <button
-                  type="submit"
-                  className="bg-[#023047] text-white p-2 rounded w-full hover:bg-[#219EBC] transition"
-                  aria-label="Sign into your account."
-                >
-                  Sign In
-                </button>
+            </div>
 
-                { /* Link to Create Account Page */ }
-                <p className="text-sm mt-4 text-center">
-                  Don&apos;t have an account? No problem!{" "}
-                  <Link 
-                    href="/create-account" 
-                    className="text-blue-600 hover:underline"
-                    aria-label="Link to create an account."
-                  >
-                    Create Account
-                  </Link>
-                </p>
-            </form>
+            {/* Error Message */}
+            {error && (
+                <div className="p-3 bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 rounded text-sm">
+                    {error}
+                </div>
+            )}
 
-        
-    
-  );
+            {/* Submit Button */}
+            <button 
+                type="submit"
+                disabled={loading}
+                className="w-full bg-amber-600 dark:bg-amber-500 text-white px-4 py-2 rounded-lg font-semibold hover:bg-amber-700 dark:hover:bg-amber-600 disabled:opacity-50 transition-colors"
+                aria-label="Sign in to your account."
+            >
+                {loading ? "Signing in..." : "Sign In"}
+            </button>
+
+            {/* Link to Create Account */}
+            <div className="text-center text-sm text-gray-600 dark:text-gray-400">
+                Don&apos;t have an account?{" "}
+                <Link href="/create-account" className="text-amber-600 dark:text-amber-400 font-semibold hover:underline">
+                    Create one
+                </Link>
+            </div>
+        </form>
+    )
 }
