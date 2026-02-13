@@ -28,7 +28,7 @@ export default function Navigation() {
           Browse
         </Link>
         <Link
-          href="/sell"
+          href="/seller"
           className="text-gray-600 dark:text-gray-300 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
         >
           Sell

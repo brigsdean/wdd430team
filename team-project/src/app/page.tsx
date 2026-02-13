@@ -31,7 +31,7 @@ export default function Home() {
               Shop Now
             </Link>
             <Link
-              href="/sell"
+              href="/seller"
               className="border-2 border-amber-600 dark:border-amber-400 text-amber-600 dark:text-amber-400 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors"
             >
               Start Selling
@@ -177,7 +177,7 @@ export default function Home() {
               <ul className="space-y-2 text-gray-400 dark:text-gray-300">
                 <li>
                   <Link
-                    href="/sell"
+                    href="/seller"
                     className="hover:text-white transition-colors"
                   >
                     Start Selling

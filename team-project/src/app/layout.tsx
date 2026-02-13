@@ -15,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className="bg-white dark:bg-gray-900 transition-colors">
+    <html lang="en" suppressHydrationWarning data-next-root="true">
+      <body suppressHydrationWarning className="bg-white dark:bg-gray-900 transition-colors">
         <Providers>
           <ThemeProvider>{children}</ThemeProvider>
         </Providers>
