@@ -23,6 +23,8 @@ model User {
   
   seller       Seller?
   reviews      Review[]
+  orders       Order[]
+  returns      Return[]
 
   @@map("users")
 }
@@ -74,6 +76,7 @@ model Product {
   seller        Seller    @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   category      Category? @relation(fields: [categoryId], references: [id])
   reviews       Review[]
+  orderItems    OrderItem[]
 
   @@map("products")
 }
@@ -91,4 +94,53 @@ model Review {
 
   @@unique([productId, userId])
   @@map("reviews")
+
+model Order {
+  id            Int         @id @default(autoincrement())
+  userId        Int         @map("user_id")
+  orderNumber   String      @unique @map("order_number") @db.VarChar(50)
+  totalAmount   Decimal     @map("total_amount") @db.Decimal(10, 2)
+  status        String      @default("pending") @db.VarChar(50)
+  shippingAddress String    @map("shipping_address") @db.Text
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt     DateTime    @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+  
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items         OrderItem[]
+  returns       Return[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId   Int      @map("order_id")
+  productId Int      @map("product_id")
+  quantity  Int      @default(1)
+  price     Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp()
+  
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
+  returns   Return[]
+
+  @@map("order_items")
+}
+
+model Return {
+  id          Int      @id @default(autoincrement())
+  orderId     Int      @map("order_id")
+  orderItemId Int      @map("order_item_id")
+  userId      Int      @map("user_id")
+  reason      String   @db.Text
+  status      String   @default("pending") @db.VarChar(50)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamp()
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamp()
+  
+  order       Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("returns")
+}
 }

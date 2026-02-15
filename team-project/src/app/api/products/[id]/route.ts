@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
 
-// Mock data - replace with real DB calls
+// Mock data fallback - used when database is not connected
 const mockProducts = [
   {
     id: 1,
@@ -55,17 +56,92 @@ export async function GET(
     const { id } = await context.params;
     const productId = parseInt(id);
 
-    // Mock: fetch product from "database"
-    const product = mockProducts.find(p => p.id === productId);
+    // Try to fetch from database first
+    try {
+      const product = await prisma.product.findUnique({
+        where: { id: productId },
+        include: {
+          seller: {
+            include: {
+              user: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+          },
+          category: true,
+          reviews: {
+            include: {
+              user: {
+                select: {
+                  firstName: true,
+                  lastName: true,
+                },
+              },
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
+        },
+      });
 
-    if (!product) {
-      return NextResponse.json(
-        { error: 'Product not found' },
-        { status: 404 }
-      );
+      if (!product) {
+        return NextResponse.json(
+          { error: 'Product not found' },
+          { status: 404 }
+        );
+      }
+
+      // Calculate average rating
+      const avgRating = product.reviews.length > 0
+        ? product.reviews.reduce((sum, review) => sum + review.rating, 0) / product.reviews.length
+        : 0;
+
+      // Format response
+      const formattedProduct = {
+        id: product.id,
+        title: product.title,
+        price: parseFloat(product.price.toString()),
+        seller: product.seller.businessName,
+        category: product.category?.name || 'Uncategorized',
+        description: product.description,
+        materials: product.materials || 'Not specified',
+        dimensions: product.dimensions || 'Not specified',
+        weight: product.weight || 'Not specified',
+        images: Array.isArray(product.images) ? product.images as string[] : ['/images/placeholder.jpg'],
+        rating: Math.round(avgRating * 10) / 10,
+        reviews: product.reviews.map(review => ({
+          id: review.id,
+          user: `${review.user.firstName} ${review.user.lastName}`,
+          rating: review.rating,
+          comment: review.comment || '',
+          date: new Date(review.createdAt).toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+          }),
+        })),
+      };
+
+      return NextResponse.json(formattedProduct);
+    } catch (dbError) {
+      console.error('Database error, falling back to mock data:', dbError);
+      
+      // Fallback to mock data
+      const product = mockProducts.find(p => p.id === productId);
+
+      if (!product) {
+        return NextResponse.json(
+          { error: 'Product not found' },
+          { status: 404 }
+        );
+      }
+
+      return NextResponse.json(product);
     }
-
-    return NextResponse.json(product);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (_error) {
     return NextResponse.json(

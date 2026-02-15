@@ -5,9 +5,11 @@ import Link from "next/link";
 import Image from "next/image";
 import Navigation from "@/components/Navigation";
 import { useCart } from "@/contexts/CartContext";
+import { useComparison } from "@/contexts/ComparisonContext";
 
 export default function BrowsePage() {
   const { addItem } = useCart();
+  const { addToCompare, isInCompare, removeFromCompare } = useComparison();
   const [justAdded, setJustAdded] = useState<Record<string | number, boolean>>({});
   // Mock products - should be fetched from API/DB in a real implementation
   const [products] = useState([
@@ -194,6 +196,32 @@ export default function BrowsePage() {
                       ({product.reviews})
                     </span>
                   </div>
+                </div>
+                <div className="flex gap-2 mb-2">
+                  <button
+                    onClick={() => {
+                      if (isInCompare(product.id)) {
+                        removeFromCompare(product.id);
+                      } else {
+                        addToCompare({
+                          id: product.id,
+                          title: product.title,
+                          price: product.price,
+                          description: product.seller,
+                          image: product.image,
+                          category: product.category,
+                          rating: product.rating,
+                        });
+                      }
+                    }}
+                    className={`flex-1 py-2 rounded font-semibold transition-colors ${
+                      isInCompare(product.id)
+                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
+                    }`}
+                  >
+                    {isInCompare(product.id) ? "✓ Comparing" : "Compare"}
+                  </button>
                 </div>
                 <div className="flex gap-3">
                   <Link href={`/products/${product.id}`} className="flex-1">

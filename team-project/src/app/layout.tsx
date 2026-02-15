@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { ThemeProvider } from "@/contexts/ThemeContext";
 import Providers from "@/app/providers";
+import ComparisonBar from "@/components/ComparisonBar";
 
 export const metadata: Metadata = {
   title: "Handcrafted Haven",
@@ -15,10 +15,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning data-next-root="true">
-      <body suppressHydrationWarning className="bg-white dark:bg-gray-900 transition-colors">
+    <html lang="en" suppressHydrationWarning>
+      <body suppressHydrationWarning>
         <Providers>
-          <ThemeProvider>{children}</ThemeProvider>
+          {children}
+          <ComparisonBar />
         </Providers>
       </body>
     </html>
