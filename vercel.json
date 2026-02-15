@@ -1,7 +1,10 @@
 {
-  "buildCommand": "cd team-project && npm ci && npm run build",
+  "buildCommand": "cd team-project && npm ci && npx prisma generate && npm run build",
   "outputDirectory": "team-project/.next",
   "installCommand": "cd team-project && npm install",
   "framework": "nextjs",
-  "regions": ["iad1"]
+  "regions": ["iad1"],
+  "env": {
+    "DATABASE_URL": "@database_url"
+  }
 }
