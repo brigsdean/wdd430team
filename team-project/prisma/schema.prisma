@@ -82,6 +82,7 @@ model Product {
 }
 
 model Review {
+model Review {
   id        Int      @id @default(autoincrement())
   productId Int      @map("product_id")
   userId    Int      @map("user_id")
@@ -94,6 +95,7 @@ model Review {
 
   @@unique([productId, userId])
   @@map("reviews")
+}
 
 model Order {
   id            Int         @id @default(autoincrement())
@@ -142,5 +144,4 @@ model Return {
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("returns")
-}
 }
