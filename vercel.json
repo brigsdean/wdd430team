@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd team-project && npm ci && npx prisma generate && npm run build",
+  "buildCommand": "cd team-project && npm ci && npm run build",
   "outputDirectory": "team-project/.next",
   "installCommand": "cd team-project && npm install",
   "framework": "nextjs",
