@@ -22,17 +22,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
-  // Load theme from localStorage on mount
+  // Load theme from localStorage on mount (default to light)
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as Theme;
-    const systemPrefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)",
-    ).matches;
+    const savedTheme = localStorage.getItem("theme");
 
-    if (savedTheme) {
+    if (savedTheme === "light" || savedTheme === "dark") {
       setTheme(savedTheme);
-    } else if (systemPrefersDark) {
-      setTheme("dark");
+    } else {
+      setTheme("light");
     }
 
     setMounted(true);
@@ -47,6 +44,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
       root.classList.toggle("dark", isDarkMode);
       body.classList.toggle("dark", isDarkMode);
+      root.style.colorScheme = isDarkMode ? "dark" : "light";
       localStorage.setItem("theme", theme);
     }
   }, [theme, mounted]);

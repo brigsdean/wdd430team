@@ -42,7 +42,11 @@ html {
   transition-timing-function: ease-in-out;
 }
 
-/* Prevent flash of wrong theme */
+/* Match native controls to the active theme */
 html {
-  color-scheme: light dark;
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
 }
