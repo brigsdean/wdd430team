@@ -55,6 +55,14 @@ export default function ProductDetail({ productId }: { productId: number }) {
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error loading product");
         setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
+  }, [productId, session]);
+
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -109,14 +117,6 @@ export default function ProductDetail({ productId }: { productId: number }) {
       setSubmitting(false);
     }
   };
-
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProduct();
-  }, [productId]);
 
   if (loading) {
     return (
