@@ -1,44 +1,28 @@
 name: Sync to Vercel Repo
 
-# Triggers when code is pushed to origin/main
 on:
   push:
     branches:
       - main
-    paths-ignore:
-      - '.github/workflows/**'
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout origin repo
+      - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Get full history
+          fetch-depth: 0
           
-      - name: Push to second (Vercel) repo
-        env:
-          TOKEN: ${{ secrets.SECOND_REPO_TOKEN }}
+      - name: Remove workflow files
         run: |
-          # Verify token exists
-          if [ -z "$TOKEN" ]; then
-            echo "ERROR: SECOND_REPO_TOKEN is not set!"
-            exit 1
-          fi
+          rm -rf .github/workflows
           
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
-          
-          # Create a clean branch without workflows
-          git checkout -b deploy-temp
-          rm -rf .github
-          git add -A
-          git commit -m "Deploy to Vercel" || echo "No changes to commit"
-          
-          # Configure git credential helper
-          git config --global url."https://api:$TOKEN@github.com/".insteadOf "https://github.com/"
-          
-          # Push to Vercel repo
-          git push https://github.com/warmace101/team17.git deploy-temp:main --force
+      - name: Push to warmace101/team17
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.SECOND_REPO_TOKEN }}
+          repository: warmace101/team17
+          branch: main
+          force: true
