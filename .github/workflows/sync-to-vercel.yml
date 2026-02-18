@@ -12,17 +12,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        
+      - name: Remove workflow directory
+        run: rm -rf .github/workflows
+        
+      - name: Push to Vercel repo
+        uses: cpina/github-action-push-to-another-repository@main
+        env:
+          API_TOKEN_GITHUB: ${{ secrets.SECOND_REPO_TOKEN }}
         with:
-          fetch-depth: 0
-          
-      - name: Remove workflow files
-        run: |
-          rm -rf .github/workflows
-          
-      - name: Push to warmace101/team17
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.SECOND_REPO_TOKEN }}
-          repository: warmace101/team17
-          branch: main
-          force: true
+          source-directory: '.'
+          destination-github-username: 'warmace101'
+          destination-repository-name: 'team17'
+          user-email: actions@github.com
+          target-branch: main
