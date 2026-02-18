@@ -20,19 +20,25 @@ jobs:
           
       - name: Push to second (Vercel) repo
         env:
-          SECOND_REPO_TOKEN: ${{ secrets.SECOND_REPO_TOKEN }}
+          TOKEN: ${{ secrets.SECOND_REPO_TOKEN }}
         run: |
+          # Verify token exists
+          if [ -z "$TOKEN" ]; then
+            echo "ERROR: SECOND_REPO_TOKEN is not set!"
+            exit 1
+          fi
+          
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           
           # Create a clean branch without workflows
           git checkout -b deploy-temp
-          rm -rf .github/workflows
+          rm -rf .github
           git add -A
-          git commit -m "Deploy: Remove workflows from Vercel repo" || echo "No changes to commit"
+          git commit -m "Deploy to Vercel" || echo "No changes to commit"
+          
+          # Configure git credential helper
+          git config --global url."https://api:$TOKEN@github.com/".insteadOf "https://github.com/"
           
           # Push to Vercel repo
-          git push https://x-access-token:${SECOND_REPO_TOKEN}@github.com/warmace101/team17.git deploy-temp:main --force
-          
-          # Clean up
-          git checkout main
+          git push https://github.com/warmace101/team17.git deploy-temp:main --force
