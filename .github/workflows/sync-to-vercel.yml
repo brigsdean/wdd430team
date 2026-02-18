@@ -15,15 +15,22 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Get full history
-          token: ${{ secrets.SECOND_REPO_TOKEN }}
           
       - name: Push to second (Vercel) repo
+        env:
+          SECOND_REPO_TOKEN: ${{ secrets.SECOND_REPO_TOKEN }}
         run: |
           git config --global user.name "GitHub Actions"
           git config --global user.email "actions@github.com"
           
-          # Add second remote
-          git remote add second https://github.com/warmace101/team17.git
+          # Create a clean branch without workflows
+          git checkout -b deploy-temp
+          rm -rf .github/workflows
+          git add -A
+          git commit -m "Deploy: Remove workflows from Vercel repo" || echo "No changes to commit"
           
-          # Push to second/main using the token from checkout
-          git push https://${{ secrets.SECOND_REPO_TOKEN }}@github.com/warmace101/team17.git main --force
+          # Push to Vercel repo
+          git push https://x-access-token:${SECOND_REPO_TOKEN}@github.com/warmace101/team17.git deploy-temp:main --force
+          
+          # Clean up
+          git checkout main
